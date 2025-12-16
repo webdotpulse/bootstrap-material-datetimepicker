@@ -1106,11 +1106,15 @@
         },
         destroy: function () {
             this._detachEvents();
+            if (this._onKeydownBound) {
+                window.removeEventListener('keydown', this._onKeydownBound);
+            }
             this.dtpElement.remove();
         },
         show: function () {
             this.dtpElement.classList.remove('hidden');
-            this._attachEvent(window, 'keydown', this._onKeydown.bind(this));
+            this._onKeydownBound = this._onKeydown.bind(this);
+            window.addEventListener('keydown', this._onKeydownBound);
             this._centerBox();
             this._triggerEvent('open');
             if (this.params.monthPicker === true) {
@@ -1118,22 +1122,9 @@
             }
         },
         hide: function () {
-            window.removeEventListener('keydown', this._onKeydown.bind(this)); // This is tricky, see note in initButtons
-            // Actually, we are using _attachEvent which pushes to _attachedEvents.
-            // But _detachEvents clears ALL events.
-            // When we hide, we only want to remove the keydown listener on window.
-            // But our current implementation of _detachEvents removes everything attached during lifetime?
-            // Wait, _detachEvents is called on destroy.
-            // hide() should just remove the listeners it added.
-            // Since we don't have a granular remove mechanism in _attachEvent easily,
-            // we should probably just rely on the element being hidden and ignoring events?
-            // No, window keydown needs to be removed.
-            // Let's implement specific listener management or just ignore it for now as a minor leak if opened/closed many times?
-            // No, we should fix it.
-            // Let's change _attachEvent to return the function reference or just not use it for temporary listeners.
-
-            // For now, I will not add 'keydown' to _attachedEvents array in show(), but manage it manually.
-
+            if (this._onKeydownBound) {
+                window.removeEventListener('keydown', this._onKeydownBound);
+            }
             this.dtpElement.classList.add('hidden');
             this._triggerEvent('close');
         },
@@ -1166,24 +1157,6 @@
             }
         }
     };
-
-    // Fix show/hide listener issue
-    var originalShow = BootstrapMaterialDatePicker.prototype.show;
-    var originalHide = BootstrapMaterialDatePicker.prototype.hide;
-
-    BootstrapMaterialDatePicker.prototype.show = function() {
-        this._onKeydownBound = this._onKeydown.bind(this);
-        window.addEventListener('keydown', this._onKeydownBound);
-        originalShow.call(this);
-    }
-
-    BootstrapMaterialDatePicker.prototype.hide = function() {
-        if(this._onKeydownBound) {
-            window.removeEventListener('keydown', this._onKeydownBound);
-        }
-        this.dtpElement.classList.add('hidden');
-        this._triggerEvent('close');
-    }
 
     global.BootstrapMaterialDatePicker = BootstrapMaterialDatePicker;
 })(window, moment);
