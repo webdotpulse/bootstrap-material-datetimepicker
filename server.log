@@ -1,0 +1,6 @@
+127.0.0.1 - - [16/Dec/2025 19:52:15] "GET /test.html HTTP/1.1" 200 -
+127.0.0.1 - - [16/Dec/2025 19:52:15] "GET /bootstrap.bundle.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [16/Dec/2025 19:52:15] "GET /bootstrap-material-datetimepicker.css HTTP/1.1" 200 -
+127.0.0.1 - - [16/Dec/2025 19:52:15] "GET /moment-with-locales.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [16/Dec/2025 19:52:15] "GET /bootstrap.min.css HTTP/1.1" 200 -
+127.0.0.1 - - [16/Dec/2025 19:52:15] "GET /bootstrap-material-datetimepicker.js HTTP/1.1" 200 -
