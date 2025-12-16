@@ -1112,6 +1112,9 @@
             this.dtpElement.remove();
         },
         show: function () {
+            if (this._onKeydownBound) {
+                window.removeEventListener('keydown', this._onKeydownBound);
+            }
             this.dtpElement.classList.remove('hidden');
             this._onKeydownBound = this._onKeydown.bind(this);
             window.addEventListener('keydown', this._onKeydownBound);
