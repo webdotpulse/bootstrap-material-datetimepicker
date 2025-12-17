@@ -241,6 +241,9 @@
             this._attachEvent(this.dtpElement.querySelector('a.dtp-select-year-range.before'), 'click', this._onYearRangeBeforeClick.bind(this));
             this._attachEvent(this.dtpElement.querySelector('a.dtp-select-year-range.after'), 'click', this._onYearRangeAfterClick.bind(this));
 
+            this._attachEvent(this.dtpElement.querySelector('a.dtp-meridien-am'), 'click', this._onSelectAM.bind(this));
+            this._attachEvent(this.dtpElement.querySelector('a.dtp-meridien-pm'), 'click', this._onSelectPM.bind(this));
+
             var yearItems = this.dtpElement.querySelectorAll('div.year-picker-item');
             for(var i=0; i<yearItems.length; i++) {
                 this._attachEvent(yearItems[i], 'click', this._onYearItemClick.bind(this));
@@ -265,36 +268,7 @@
             }
         },
         initMeridienButtons: function () {
-            var amBtn = this.dtpElement.querySelector('a.dtp-meridien-am');
-            var pmBtn = this.dtpElement.querySelector('a.dtp-meridien-pm');
-
-            // Removing old listeners is not straightforward without storing them specifically,
-            // but we can clone the node to clear listeners or just rely on the fact that initHours/initMinutes might be called multiple times.
-            // A better way is to store the listener and remove it.
-            // But _attachEvent stores them.
-            // Actually, initMeridienButtons is called inside initHours/initMinutes which are called repeatedly.
-            // We should check if listener is already attached or remove previous one.
-            // The original code used .off('click').on('click'), so it removed previous listeners.
-            // We can do this by using a new clone or just handling it carefully.
-            // For now, let's clone node to strip events, which is quick hack but works for vanilla.
-            // Or better, store the bound function.
-
-            // To properly remove event listeners in vanilla JS, we need reference to the function.
-            // But we are binding `this` which creates a new function every time.
-            // So we can't easily remove specific one unless we stored it.
-            // Let's implement a simple cleanup for these buttons specifically or just use a flag.
-
-            // Simplified: we will not re-attach if already attached?
-            // But initHours can be called multiple times.
-
-            // Let's use the cloneNode trick for these buttons to clear events.
-            var newAmBtn = amBtn.cloneNode(true);
-            amBtn.parentNode.replaceChild(newAmBtn, amBtn);
-            var newPmBtn = pmBtn.cloneNode(true);
-            pmBtn.parentNode.replaceChild(newPmBtn, pmBtn);
-
-            this._attachEvent(newAmBtn, 'click', this._onSelectAM.bind(this));
-            this._attachEvent(newPmBtn, 'click', this._onSelectPM.bind(this));
+            // Logic moved to initButtons
         },
         initDate: function (d) {
             this.currentView = 0;
@@ -328,7 +302,6 @@
             this.currentView = 1;
 
             this.showTime(this.currentDate);
-            this.initMeridienButtons();
 
             if (this.currentDate.hour() < 12) {
                 this.dtpElement.querySelector('a.dtp-meridien-am').click();
@@ -405,8 +378,6 @@
             this.currentView = 2;
 
             this.showTime(this.currentDate);
-
-            this.initMeridienButtons();
 
             if (this.currentDate.hour() < 12) {
                 this.dtpElement.querySelector('a.dtp-meridien-am').click();
